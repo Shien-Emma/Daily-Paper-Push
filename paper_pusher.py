@@ -12,7 +12,7 @@ import urllib.parse
 # CONFIGURATION
 # ==========================================
 GEMINI_API_KEY = os.environ.get('AIzaSyDmoH4OgyCz1ALpg7d6qdfY6NAQ3uqsvIQ')
-GITHUB_REPO = "Shien_Emma/Zhangxy" # <-- UPDATE THIS
+GITHUB_REPO = "Shien_Emma/Daily-Paper-Push" # <-- UPDATE THIS
 
 JOURNAL_FEEDS = {
     "Nature": "https://www.nature.com/nature.rss",
@@ -185,4 +185,5 @@ if __name__ == "__main__":
         save_memory(new_links_to_save)
         print("Memory updated successfully.")
     else:
+
         print("\nNo new papers matched your keywords today.")
