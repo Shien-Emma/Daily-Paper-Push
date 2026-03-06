@@ -67,9 +67,11 @@ def save_memory(new_links):
 def fetch_and_filter(rss_url, keywords, journal_name, seen_links):
     try:
         feed = feedparser.parse(rss_url)
+        # If the feed has entries, it's working. If 0, it might be broken.
+        is_working = len(feed.entries) > 0 
     except Exception as e:
         print(f"Error fetching feed for {journal_name}: {e}")
-        return []
+        return [], False
 
     relevant_papers = []
     for entry in feed.entries:
@@ -85,7 +87,7 @@ def fetch_and_filter(rss_url, keywords, journal_name, seen_links):
             entry['source_journal'] = journal_name
             relevant_papers.append(entry)
             
-    return relevant_papers
+    return relevant_papers, is_working
 
 def summarize_paper(title, abstract):
     prompt = f"""
@@ -166,17 +168,31 @@ if __name__ == "__main__":
     
     all_filtered_papers = []
     new_links_to_save = []
+    broken_feeds = [] # <-- NEW: Track broken feeds
 
     for journal_name, rss_url in JOURNAL_FEEDS.items():
         print(f"Checking {journal_name}...")
-        papers = fetch_and_filter(rss_url, target_keywords, journal_name, seen_links)
+        # <-- NEW: Unpack the two returned values
+        papers, is_working = fetch_and_filter(rss_url, target_keywords, journal_name, seen_links) 
+        
+        if not is_working:
+            broken_feeds.append(journal_name)
+            
         all_filtered_papers.extend(papers)
         
         for p in papers:
             new_links_to_save.append(p.get('link', ''))
         
-    if all_filtered_papers:
-        final_document = create_report(all_filtered_papers, target_keywords)
+    if all_filtered_papers or broken_feeds: # <-- NEW: Send email even if just reporting broken feeds
+        # Generate the main report
+        final_document = create_report(all_filtered_papers, target_keywords) if all_filtered_papers else "# Daily Paper Push\n\nNo relevant papers found today.\n\n"
+        
+        # <-- NEW: Append the health report to the bottom
+        if broken_feeds:
+            final_document += "---\n### ⚠️ Feed Health Warning\n"
+            final_document += "The following RSS feeds returned no data today and may have changed their URLs:\n"
+            for broken in broken_feeds:
+                final_document += f"- {broken}\n"
         
         date_str = datetime.now().strftime('%Y-%m-%d')
         email_subject = f"Daily Paper Push - {date_str}"
@@ -185,6 +201,6 @@ if __name__ == "__main__":
         save_memory(new_links_to_save)
         print("Memory updated successfully.")
     else:
+        print("\nNo new papers matched your keywords today, and all feeds are working.")
 
-        print("\nNo new papers matched your keywords today.")
 
