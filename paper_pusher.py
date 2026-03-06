@@ -35,11 +35,11 @@ JOURNAL_FEEDS = {
     "Cell": "https://www.cell.com/cell/inpress.rss",
     "Microbiome": "https://link.springer.com/search.rss?facet-journal-id=40168&sortOrder=newestFirst",
     "Environmental Microbiome": "https://link.springer.com/search.rss?facet-journal-id=40793&sortOrder=newestFirst",
-    "bioRxiv (Micro/Genomics/Eco)": "https://connect.biorxiv.org/biorxiv_xml.php?subject=microbiology+genomics+ecology"
-    "ISME Communications": "https://academic.oup.com/ismecommun/rss"
-    "Trends in Biochemical Sciences": "https://rss.sciencedirect.com/publication/science/09680004"
-    "Trends in Microbiology": "https://rss.sciencedirect.com/publication/science/0966842X"
-    "Genome Biology": "https://genomebiology.biomedcentral.com/articles/rss.xml"
+    "bioRxiv (Micro/Genomics/Eco)": "https://connect.biorxiv.org/biorxiv_xml.php?subject=microbiology+genomics+ecology",
+    "ISME Communications": "https://academic.oup.com/ismecommun/rss",
+    "Trends in Biochemical Sciences": "https://rss.sciencedirect.com/publication/science/09680004",
+    "Trends in Microbiology": "https://rss.sciencedirect.com/publication/science/0966842X",
+    "Genome Biology": "https://genomebiology.biomedcentral.com/articles/rss.xml",
     "Nucleic Acids Research": "https://academic.oup.com/nar/rss"
 }
 
@@ -273,6 +273,7 @@ if __name__ == "__main__":
         print("Memory updated successfully.")
     else:
         print("\nNo new papers matched your keywords today, and all feeds are working.")
+
 
 
 
