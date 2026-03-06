@@ -10,6 +10,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          ref: main # Explicitly checks out the main branch so git push works
 
       - name: Set up Python
         uses: actions/setup-python@v5
