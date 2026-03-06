@@ -14,7 +14,7 @@ import json
 # CONFIGURATION
 # ==========================================
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
-GITHUB_REPO = "YOUR_USERNAME/YOUR_REPOSITORY_NAME" # <-- MUST BE UPDATED
+GITHUB_REPO = "Shien-Emma/Daily-Paper-Push" # <-- MUST BE UPDATED
 
 JOURNAL_FEEDS = {
     "Nature": "https://www.nature.com/nature.rss",
@@ -259,3 +259,4 @@ if __name__ == "__main__":
         print("Memory updated successfully.")
     else:
         print("\nNo new papers matched your keywords today, and all feeds are working.")
+
