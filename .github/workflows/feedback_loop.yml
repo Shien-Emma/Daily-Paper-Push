@@ -20,12 +20,26 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          python -m pip install --upgrade pip
+          python -m pip install --upgrade pip setuptools wheel
           pip install --force-reinstall google-genai
           pip install -r requirements.txt
 
+      - name: Verify Environment and Libraries
+        run: |
+          python -m pip freeze
+          python --version
+          python -c "import sys; print('\n'.join(sys.path))"
+          python -c "import pkg_resources; print([d.project_name for d in pkg_resources.working_set])"
+          
       - name: Verify google-genai installation
         run: python -c "from google import genai; print('google-genai OK')"
+
+      - name: Debug process_feedback.py
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: |
+          python -m trace -t process_feedback.py
 
       - name: Extract Keywords with Gemini
         env:
@@ -40,7 +54,7 @@ jobs:
           git add keywords.txt
           git diff --quiet && git diff --staged --quiet || git commit -m "Automated keyword expansion"
           git push
-          
+
       - name: Close Issue
         uses: peter-evans/close-issue@v3
         with:
