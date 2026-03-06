@@ -23,7 +23,8 @@ JOURNAL_FEEDS = {
     "ISME Journal": "https://www.nature.com/ismej.rss",
     "Microbiome": "https://microbiomejournal.biomedcentral.com/articles/rss",
     "Environmental Microbiome": "https://environmentalmicrobiome.biomedcentral.com/articles/rss",
-    "Environmental Science & Technology": "https://pubs.acs.org/action/showFeed?type=etoc&feed=rss&jc=esthag"
+    "Environmental Science & Technology": "https://pubs.acs.org/action/showFeed?type=etoc&feed=rss&jc=esthag",
+    "bioRxiv (Micro/Genomics/Eco)": "https://connect.biorxiv.org/biorxiv_xml.php?subject=microbiology+genomics+ecology"
 }
 
 MEMORY_FILE = "seen_papers.txt"
@@ -197,3 +198,4 @@ if __name__ == "__main__":
         print("Memory updated successfully.")
     else:
         print("\nNo new papers matched your keywords today, and all feeds are working.")
+
