@@ -18,13 +18,13 @@ JOURNAL_FEEDS = {
     "Nature": "https://www.nature.com/nature.rss",
     "Nature Microbiology": "https://www.nature.com/nmicrobiol.rss",
     "Science": "https://www.science.org/action/showFeed?type=etoc&feed=rss&jc=science",
-    "Cell": "https://www.cell.com/cell/newarticles.rss",
+    "Cell": "https://www.cell.com/cell/inpress.rss", # <-- UPDATED
     "Nature Communications": "https://www.nature.com/ncomms.rss",
     "ISME Journal": "https://www.nature.com/ismej.rss",
-    "Microbiome": "https://microbiomejournal.biomedcentral.com/articles/rss",
-    "Environmental Microbiome": "https://environmentalmicrobiome.biomedcentral.com/articles/rss",
+    "Microbiome": "https://link.springer.com/search.rss?facet-journal-id=40168&sortOrder=newestFirst", # <-- UPDATED
+    "Environmental Microbiome": "https://link.springer.com/search.rss?facet-journal-id=40793&sortOrder=newestFirst", # <-- UPDATED
     "Environmental Science & Technology": "https://pubs.acs.org/action/showFeed?type=etoc&feed=rss&jc=esthag",
-    "bioRxiv (Micro/Genomics/Eco)": "https://connect.biorxiv.org/biorxiv_xml.php?subject=microbiology+genomics+ecology"
+    "bioRxiv (Micro/Genomics/Eco)": "https://connect.biorxiv.org/biorxiv_xml.php?subject=microbiology+genomics+ecology" # <-- NEW
 }
 
 MEMORY_FILE = "seen_papers.txt"
@@ -198,4 +198,5 @@ if __name__ == "__main__":
         print("Memory updated successfully.")
     else:
         print("\nNo new papers matched your keywords today, and all feeds are working.")
+
 
