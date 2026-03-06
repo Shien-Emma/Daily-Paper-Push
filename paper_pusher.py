@@ -20,12 +20,26 @@ JOURNAL_FEEDS = {
     "Nature": "https://www.nature.com/nature.rss",
     "Nature Microbiology": "https://www.nature.com/nmicrobiol.rss",
     "Science": "https://www.science.org/action/showFeed?type=etoc&feed=rss&jc=science",
-    "Cell": "https://www.cell.com/cell/inpress.rss",
+    "Science Advances": "https://www.science.org/action/showFeed?type=etoc&feed=rss&jc=sciadv",
     "Nature Communications": "https://www.nature.com/ncomms.rss",
+    "Nature Geoscience": "https://www.nature.com/ngeo.rss",
+    "Nature Reviews Microbiology": "https://www.nature.com/nrmicro.rss",
+    "Nature Ecology & Evolution": "https://www.nature.com/natecolevol.rss",
+    "Nature Climate Change": "https://www.nature.com/nclimate.rss",
+    "Nature Biotechnology": "https://www.nature.com/nbt.rss",
+    "Communications Biology": "https://www.nature.com/commsbio.rss",
     "ISME Journal": "https://www.nature.com/ismej.rss",
+    "ISME Communications": "https://www.nature.com/ismeco.rss",
+    "Trends in Biochemical Sciences": "https://www.cell.com/trends/biochemical-sciences/newarticles.rss",
+    "Trends in Microbiology": "https://www.cell.com/trends/microbiology/newarticles.rss",
+    "Genome Biology": "https://genomebiology.biomedcentral.com/articles/rss",
+    "PNAS": "https://www.pnas.org/action/showFeed?type=etoc&feed=rss&jc=pnas",
+    "Environmental Science & Technology": "https://pubs.acs.org/action/showFeed?type=etoc&feed=rss&jc=esthag",
+    "Ecology Letters": "https://onlinelibrary.wiley.com/feed/14610248/most-recent",
+    "Nucleic Acids Research": "https://academic.oup.com/nar/rss/current",
+    "Cell": "https://www.cell.com/cell/inpress.rss",
     "Microbiome": "https://link.springer.com/search.rss?facet-journal-id=40168&sortOrder=newestFirst",
     "Environmental Microbiome": "https://link.springer.com/search.rss?facet-journal-id=40793&sortOrder=newestFirst",
-    "Environmental Science & Technology": "https://pubs.acs.org/action/showFeed?type=etoc&feed=rss&jc=esthag",
     "bioRxiv (Micro/Genomics/Eco)": "https://connect.biorxiv.org/biorxiv_xml.php?subject=microbiology+genomics+ecology"
 }
 
@@ -259,5 +273,6 @@ if __name__ == "__main__":
         print("Memory updated successfully.")
     else:
         print("\nNo new papers matched your keywords today, and all feeds are working.")
+
 
 
