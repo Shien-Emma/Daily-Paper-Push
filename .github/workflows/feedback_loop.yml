@@ -21,7 +21,11 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
+          pip install --force-reinstall google-genai
           pip install -r requirements.txt
+
+      - name: Verify google-genai installation
+        run: python -c "from google import genai; print('google-genai OK')"
 
       - name: Extract Keywords with Gemini
         env:
