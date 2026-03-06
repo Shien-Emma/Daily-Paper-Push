@@ -1,4 +1,5 @@
 import os
+from google import genai
 
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
 ISSUE_BODY = os.environ.get('ISSUE_BODY', '')
@@ -34,4 +35,3 @@ try:
     print(f"Successfully added keywords: {new_keywords}")
 except Exception as e:
     print(f"Failed to extract keywords: {e}")
-
