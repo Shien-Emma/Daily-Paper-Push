@@ -1,18 +1,18 @@
 import os
 import feedparser
-from google import genai
 from datetime import datetime
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import markdown
 import urllib.parse
+from google import genai # <-- NEW SDK IMPORT
 
 # ==========================================
 # CONFIGURATION
 # ==========================================
-GEMINI_API_KEY = os.environ.get('')
-GITHUB_REPO = "Shien_Emma/Daily-Paper-Push" # <-- UPDATE THIS
+GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
+GITHUB_REPO = "Shien-Emma/Daily-Paper-Push" # <-- MUST BE UPDATED
 
 JOURNAL_FEEDS = {
     "Nature": "https://www.nature.com/nature.rss",
@@ -24,7 +24,6 @@ JOURNAL_FEEDS = {
     "Microbiome": "https://microbiomejournal.biomedcentral.com/articles/rss",
     "Environmental Microbiome": "https://environmentalmicrobiome.biomedcentral.com/articles/rss",
     "Environmental Science & Technology": "https://pubs.acs.org/action/showFeed?type=etoc&feed=rss&jc=esthag"
-    # Add the rest of your journals back here
 }
 
 MEMORY_FILE = "seen_papers.txt"
@@ -34,27 +33,25 @@ EMAIL_SENDER = os.environ.get('EMAIL_SENDER')
 EMAIL_PASSWORD = os.environ.get('EMAIL_PASSWORD')
 EMAIL_RECEIVER = os.environ.get('EMAIL_RECEIVER')
 
-client = genai.Client(api_key=GEMINI_API_KEY)
+# <-- NEW SDK INITIALIZATION
+client = genai.Client(api_key=GEMINI_API_KEY) 
 
 # ==========================================
 # STATE & MEMORY FUNCTIONS
 # ==========================================
 def load_keywords():
-    """Loads keywords dynamically from the text file."""
     if os.path.exists(KEYWORD_FILE):
         with open(KEYWORD_FILE, "r") as f:
             return [line.strip().lower() for line in f.readlines() if line.strip()]
-    return ['metagenome', 'environmental microbiology'] # Fallback
+    return ['metagenome', 'environmental microbiology'] 
 
 def load_memory():
-    """Loads previously seen paper links into a set."""
     if os.path.exists(MEMORY_FILE):
         with open(MEMORY_FILE, "r") as f:
             return set(line.strip() for line in f.readlines())
     return set()
 
 def save_memory(new_links):
-    """Appends newly processed paper links to the memory file."""
     if new_links:
         with open(MEMORY_FILE, "a") as f:
             for link in new_links:
@@ -66,8 +63,7 @@ def save_memory(new_links):
 def fetch_and_filter(rss_url, keywords, journal_name, seen_links):
     try:
         feed = feedparser.parse(rss_url)
-        # If the feed has entries, it's working. If 0, it might be broken.
-        is_working = len(feed.entries) > 0 
+        is_working = len(feed.entries) > 0
     except Exception as e:
         print(f"Error fetching feed for {journal_name}: {e}")
         return [], False
@@ -97,6 +93,7 @@ def summarize_paper(title, abstract):
     Abstract: {abstract}
     """
     try:
+        # <-- NEW SDK API CALL
         response = client.models.generate_content(
             model='gemini-2.5-flash',
             contents=prompt
@@ -106,7 +103,6 @@ def summarize_paper(title, abstract):
         return f"Summary generation failed: {e}"
 
 def generate_feedback_link(title, ai_summary):
-    """Creates a pre-filled GitHub Issue URL to capture feedback."""
     issue_title = urllib.parse.quote(f"Interest: {title}")
     issue_body = urllib.parse.quote(f"Extract keywords from this paper to expand my library.\n\n**Title:** {title}\n\n**Summary:** {ai_summary}")
     return f"https://github.com/{GITHUB_REPO}/issues/new?title={issue_title}&body={issue_body}"
@@ -170,12 +166,11 @@ if __name__ == "__main__":
     
     all_filtered_papers = []
     new_links_to_save = []
-    broken_feeds = [] # <-- NEW: Track broken feeds
+    broken_feeds = []
 
     for journal_name, rss_url in JOURNAL_FEEDS.items():
         print(f"Checking {journal_name}...")
-        # <-- NEW: Unpack the two returned values
-        papers, is_working = fetch_and_filter(rss_url, target_keywords, journal_name, seen_links) 
+        papers, is_working = fetch_and_filter(rss_url, target_keywords, journal_name, seen_links)
         
         if not is_working:
             broken_feeds.append(journal_name)
@@ -185,11 +180,9 @@ if __name__ == "__main__":
         for p in papers:
             new_links_to_save.append(p.get('link', ''))
         
-    if all_filtered_papers or broken_feeds: # <-- NEW: Send email even if just reporting broken feeds
-        # Generate the main report
+    if all_filtered_papers or broken_feeds:
         final_document = create_report(all_filtered_papers, target_keywords) if all_filtered_papers else "# Daily Paper Push\n\nNo relevant papers found today.\n\n"
         
-        # <-- NEW: Append the health report to the bottom
         if broken_feeds:
             final_document += "---\n### ⚠️ Feed Health Warning\n"
             final_document += "The following RSS feeds returned no data today and may have changed their URLs:\n"
@@ -204,6 +197,3 @@ if __name__ == "__main__":
         print("Memory updated successfully.")
     else:
         print("\nNo new papers matched your keywords today, and all feeds are working.")
-
-
-
