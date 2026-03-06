@@ -11,7 +11,7 @@ import urllib.parse
 # ==========================================
 # CONFIGURATION
 # ==========================================
-GEMINI_API_KEY = os.environ.get('AIzaSyDmoH4OgyCz1ALpg7d6qdfY6NAQ3uqsvIQ')
+GEMINI_API_KEY = os.environ.get('')
 GITHUB_REPO = "Shien_Emma/Daily-Paper-Push" # <-- UPDATE THIS
 
 JOURNAL_FEEDS = {
@@ -187,3 +187,4 @@ if __name__ == "__main__":
     else:
 
         print("\nNo new papers matched your keywords today.")
+
