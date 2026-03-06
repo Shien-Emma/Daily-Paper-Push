@@ -48,7 +48,7 @@ KEYWORD_FILE = "keywords.txt"
 
 EMAIL_SENDER = os.environ.get('EMAIL_SENDER')
 EMAIL_PASSWORD = os.environ.get('EMAIL_PASSWORD')
-EMAIL_RECEIVER = os.environ.get('EMAIL_RECEIVER')
+EMAIL_RECEIVER = [email.strip() for email in os.environ.get('EMAIL_RECEIVER', '').split(',') if email.strip()]
 
 client = genai.Client(api_key=GEMINI_API_KEY) 
 
@@ -203,7 +203,7 @@ def send_email(subject, markdown_body):
     
     msg = MIMEMultipart('alternative')
     msg['From'] = EMAIL_SENDER
-    msg['To'] = EMAIL_RECEIVER
+    msg['To'] = ", ".join(EMAIL_RECEIVER)  # Use `join` for multiple addresses
     msg['Subject'] = subject
 
     msg.attach(MIMEText(markdown_body, 'plain', 'utf-8'))
@@ -273,6 +273,7 @@ if __name__ == "__main__":
         print("Memory updated successfully.")
     else:
         print("\nNo new papers matched your keywords today, and all feeds are working.")
+
 
 
 
