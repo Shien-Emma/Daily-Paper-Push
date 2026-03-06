@@ -1,6 +1,6 @@
 import os
 import feedparser
-import google.generativeai as genai
+from google import genai
 from datetime import datetime
 import smtplib
 from email.mime.text import MIMEText
@@ -34,8 +34,7 @@ EMAIL_SENDER = os.environ.get('EMAIL_SENDER')
 EMAIL_PASSWORD = os.environ.get('EMAIL_PASSWORD')
 EMAIL_RECEIVER = os.environ.get('EMAIL_RECEIVER')
 
-genai.configure(api_key=GEMINI_API_KEY)
-model = genai.GenerativeModel('gemini-2.5-flash')
+client = genai.Client(api_key=GEMINI_API_KEY)
 
 # ==========================================
 # STATE & MEMORY FUNCTIONS
@@ -98,7 +97,10 @@ def summarize_paper(title, abstract):
     Abstract: {abstract}
     """
     try:
-        response = model.generate_content(prompt)
+        response = client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=prompt
+        )
         return response.text.strip()
     except Exception as e:
         return f"Summary generation failed: {e}"
@@ -202,5 +204,6 @@ if __name__ == "__main__":
         print("Memory updated successfully.")
     else:
         print("\nNo new papers matched your keywords today, and all feeds are working.")
+
 
 
