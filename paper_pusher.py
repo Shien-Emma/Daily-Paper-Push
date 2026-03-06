@@ -6,25 +6,27 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import markdown
 import urllib.parse
-from google import genai # <-- NEW SDK IMPORT
+from google import genai
+import time
+import json
 
 # ==========================================
 # CONFIGURATION
 # ==========================================
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
-GITHUB_REPO = "Shien-Emma/Daily-Paper-Push" # <-- MUST BE UPDATED
+GITHUB_REPO = "YOUR_USERNAME/YOUR_REPOSITORY_NAME" # <-- MUST BE UPDATED
 
 JOURNAL_FEEDS = {
     "Nature": "https://www.nature.com/nature.rss",
     "Nature Microbiology": "https://www.nature.com/nmicrobiol.rss",
     "Science": "https://www.science.org/action/showFeed?type=etoc&feed=rss&jc=science",
-    "Cell": "https://www.cell.com/cell/inpress.rss", # <-- UPDATED
+    "Cell": "https://www.cell.com/cell/inpress.rss",
     "Nature Communications": "https://www.nature.com/ncomms.rss",
     "ISME Journal": "https://www.nature.com/ismej.rss",
-    "Microbiome": "https://link.springer.com/search.rss?facet-journal-id=40168&sortOrder=newestFirst", # <-- UPDATED
-    "Environmental Microbiome": "https://link.springer.com/search.rss?facet-journal-id=40793&sortOrder=newestFirst", # <-- UPDATED
+    "Microbiome": "https://link.springer.com/search.rss?facet-journal-id=40168&sortOrder=newestFirst",
+    "Environmental Microbiome": "https://link.springer.com/search.rss?facet-journal-id=40793&sortOrder=newestFirst",
     "Environmental Science & Technology": "https://pubs.acs.org/action/showFeed?type=etoc&feed=rss&jc=esthag",
-    "bioRxiv (Micro/Genomics/Eco)": "https://connect.biorxiv.org/biorxiv_xml.php?subject=microbiology+genomics+ecology" # <-- NEW
+    "bioRxiv (Micro/Genomics/Eco)": "https://connect.biorxiv.org/biorxiv_xml.php?subject=microbiology+genomics+ecology"
 }
 
 MEMORY_FILE = "seen_papers.txt"
@@ -34,7 +36,6 @@ EMAIL_SENDER = os.environ.get('EMAIL_SENDER')
 EMAIL_PASSWORD = os.environ.get('EMAIL_PASSWORD')
 EMAIL_RECEIVER = os.environ.get('EMAIL_RECEIVER')
 
-# <-- NEW SDK INITIALIZATION
 client = genai.Client(api_key=GEMINI_API_KEY) 
 
 # ==========================================
@@ -59,7 +60,7 @@ def save_memory(new_links):
                 f.write(f"{link}\n")
 
 # ==========================================
-# CORE PROCESSING
+# CORE PROCESSING & AI FUNNEL
 # ==========================================
 def fetch_and_filter(rss_url, keywords, journal_name, seen_links):
     try:
@@ -85,6 +86,50 @@ def fetch_and_filter(rss_url, keywords, journal_name, seen_links):
             
     return relevant_papers, is_working
 
+def rank_and_select_top_papers(papers, keywords, limit=10):
+    """Uses Gemini to evaluate all matched papers and pick the best ones."""
+    if len(papers) <= limit:
+        return papers
+
+    print(f"Asking AI to rank {len(papers)} papers to find the top {limit}...")
+    
+    papers_text = ""
+    for i, p in enumerate(papers):
+        abstract = p.get('summary', 'No abstract')
+        papers_text += f"[{i}] Title: {p.title}\nAbstract: {abstract[:1000]}...\n\n"
+
+    prompt = f"""
+    You are an expert Editor-in-Chief for a scientific journal. I have {len(papers)} freshly published papers matched by my tracking keywords: {', '.join(keywords)}.
+    
+    Read the following abstracts and identify the top {limit} most impactful, highly novel, and highly relevant papers for a researcher specializing in environmental microbiology and metagenomics. Prioritize breakthrough methods or significant ecological findings.
+    
+    Here are the papers:
+    {papers_text}
+    
+    Return ONLY a valid JSON array containing the exact integer numbers of the winning papers. Do not include any other text or formatting. 
+    Example format: [0, 4, 7, 12]
+    """
+    
+    try:
+        response = client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=prompt
+        )
+        result_text = response.text.strip().replace('```json', '').replace('```', '')
+        
+        # Parse the JSON string into a Python list
+        top_indices = json.loads(result_text)
+        
+        # Ensure we only try to grab indices that actually exist
+        top_papers = [papers[i] for i in top_indices if isinstance(i, int) and i < len(papers)]
+        
+        print(f"AI selected papers {top_indices} as the most valuable.")
+        return top_papers[:limit]
+        
+    except Exception as e:
+        print(f"Ranking failed, falling back to first available papers: {e}")
+        return papers[:limit]
+
 def summarize_paper(title, abstract):
     prompt = f"""
     Read the following title and abstract of a scientific paper. 
@@ -94,7 +139,6 @@ def summarize_paper(title, abstract):
     Abstract: {abstract}
     """
     try:
-        # <-- NEW SDK API CALL
         response = client.models.generate_content(
             model='gemini-2.5-flash',
             contents=prompt
@@ -125,6 +169,10 @@ def create_report(papers, current_keywords):
         abstract = paper.get('summary', 'No abstract provided')
 
         ai_summary = summarize_paper(paper.title, abstract)
+        
+        # Rate limit protection: Pause for 5 seconds
+        time.sleep(5) 
+
         feedback_url = generate_feedback_link(paper.title, ai_summary)
 
         report += f"## {i}. {paper.title}\n"
@@ -182,7 +230,20 @@ if __name__ == "__main__":
             new_links_to_save.append(p.get('link', ''))
         
     if all_filtered_papers or broken_feeds:
-        final_document = create_report(all_filtered_papers, target_keywords) if all_filtered_papers else "# Daily Paper Push\n\nNo relevant papers found today.\n\n"
+        
+        if all_filtered_papers:
+            # AI Editor selects the top 10 papers
+            best_papers = rank_and_select_top_papers(all_filtered_papers, target_keywords, limit=10)
+            final_document = create_report(best_papers, target_keywords)
+            
+            # Add Editor note
+            total_found = len(all_filtered_papers)
+            final_document = final_document.replace(
+                f"*Currently tracking", 
+                f"*AI Editor-in-Chief reviewed {total_found} matched papers and selected the top {len(best_papers)} for you.*\n\n*Currently tracking"
+            )
+        else:
+            final_document = "# Daily Paper Push\n\nNo relevant papers found today.\n\n"
         
         if broken_feeds:
             final_document += "---\n### ⚠️ Feed Health Warning\n"
@@ -198,5 +259,3 @@ if __name__ == "__main__":
         print("Memory updated successfully.")
     else:
         print("\nNo new papers matched your keywords today, and all feeds are working.")
-
-
