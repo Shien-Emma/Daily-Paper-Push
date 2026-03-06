@@ -17,7 +17,7 @@ jobs:
           python-version: '3.12'
 
       - name: Install Google AI
-        run: pip install google-generativeai
+        run: pip install google-genai
 
       - name: Extract Keywords with Gemini
         env:
