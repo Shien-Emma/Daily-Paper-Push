@@ -185,7 +185,7 @@ def create_report(papers, current_keywords):
         ai_summary = summarize_paper(paper.title, abstract)
         
         # Rate limit protection: Pause for 20 seconds
-        time.sleep(60) 
+        time.sleep(120) 
 
         feedback_url = generate_feedback_link(paper.title, ai_summary)
 
@@ -273,6 +273,7 @@ if __name__ == "__main__":
         print("Memory updated successfully.")
     else:
         print("\nNo new papers matched your keywords today, and all feeds are working.")
+
 
 
 
