@@ -29,6 +29,13 @@ jobs:
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
           EMAIL_RECEIVER: ${{ secrets.EMAIL_RECEIVER }}
         run: python paper_pusher.py
+      - name: Commit local changes
+        run: |
+          git add .
+          git commit -m "Auto-commit before pull" || echo "No changes to commit"
+
+      - name: Pull latest changes
+        run: git pull --rebase
       - name: Pull latest changes
         run: git pull --rebase origin master
       - name: Commit and Push Memory File
