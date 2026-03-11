@@ -40,7 +40,8 @@ JOURNAL_FEEDS = {
     "Trends in Biochemical Sciences": "https://rss.sciencedirect.com/publication/science/09680004",
     "Trends in Microbiology": "https://rss.sciencedirect.com/publication/science/0966842X",
     "Genome Biology": "https://genomebiology.biomedcentral.com/articles/rss.xml",
-    "Nucleic Acids Research": "https://academic.oup.com/nar/rss"
+    "Nucleic Acids Research": "https://academic.oup.com/nar/rss",
+    "Communications Earth & Environment": "https://www.nature.com/commsenv.rss"
 }
 
 MEMORY_FILE = "seen_papers.txt"
@@ -273,6 +274,7 @@ if __name__ == "__main__":
         print("Memory updated successfully.")
     else:
         print("\nNo new papers matched your keywords today, and all feeds are working.")
+
 
 
 
