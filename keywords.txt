@@ -29,3 +29,6 @@ redox
 sulfur cycle
 biogeochemistry
 redox
+microbial communities
+syntrophy
+methanogenesis
