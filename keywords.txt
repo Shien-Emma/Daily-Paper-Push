@@ -32,3 +32,6 @@ redox
 microbial communities
 syntrophy
 methanogenesis
+methane
+archaea
+anaerobic
