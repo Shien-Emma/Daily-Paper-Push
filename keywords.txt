@@ -35,3 +35,6 @@ methanogenesis
 methane
 archaea
 anaerobic
+methane
+carbon dioxide
+greenhouse gas
