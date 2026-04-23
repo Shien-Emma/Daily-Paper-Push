@@ -44,3 +44,6 @@ bioengineering
 microbial phosphorus cycling
 microbial communities
 microbial evolution
+microbial communities
+cross-feeding
+coexistence
